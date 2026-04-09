@@ -13,10 +13,22 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+
+import os
 from django.contrib import admin
 from django.urls import path, include
+from django.http import JsonResponse
+
+def codespace_url_view(request):
+    codespace_name = os.environ.get('CODESPACE_NAME')
+    if codespace_name:
+        url = f'https://{codespace_name}-8000.app.github.dev'
+    else:
+        url = 'http://localhost:8000'
+    return JsonResponse({'codespace_url': url})
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', codespace_url_view, name='codespace-url'),
     path('', include('octofit_tracker.api_urls')),
 ]
